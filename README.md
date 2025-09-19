@@ -1,6 +1,6 @@
 # media-suite
 
-Requesitos:
+Requisitos:
 - Provedor VPN suportado por Gluetun
 - /dev/net/tun disponível
 - Acesso NFS permitido
