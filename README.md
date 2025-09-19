@@ -1,19 +1,35 @@
-# media-suite (em testes)
+# 🎬 Media Suite (em testes)
 
-Requisitos:
-- Provedor VPN suportado por Gluetun
-- /dev/net/tun disponível
-- Acesso NFS permitido
-- Permissões NFS = Permissões ID UID
+Automatização de um stack multimédia com Sonarr, Radarr, Lidarr, Prowlarr, Bazarr, Jellyfin, Tdarr e RdtClient, todos encapsulados atrás do Gluetun (VPN).
 
-Passos:
-- sudo apt update
-- sudo apt install -y sudo git
-- cd /opt
-- git clone https://github.com/lmbalcao/media-suite.git
-- cd media-suite
-- cp .env.example .env
-- nano .env
-- sudo ./bootstrap_media.sh
+---
 
+## 📋 Requisitos
 
+- 🌐 Provedor VPN **suportado pelo [Gluetun](https://github.com/qdm12/gluetun)**
+- ⚙️ Device `/dev/net/tun` disponível no host/LXC
+- 📂 Acesso **NFS** configurado e permitido
+- 👤 Permissões de NFS compatíveis com **UID/GID definidos no `.env`**
+
+---
+
+## 🚀 Passos de Instalação
+
+```bash
+# 1. Atualizar pacotes
+sudo apt update
+
+# 2. Instalar dependências
+sudo apt install -y sudo git
+
+# 3. Clonar o repositório
+cd /opt
+git clone https://github.com/lmbalcao/media-suite.git
+cd media-suite
+
+# 4. Preparar ficheiro de configuração
+cp .env.example .env
+nano .env   # editar com credenciais VPN e paths NFS
+
+# 5. Correr o bootstrap
+sudo ./bootstrap_media.sh
