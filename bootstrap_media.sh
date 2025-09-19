@@ -6,6 +6,27 @@ set -euo pipefail
 # Autor: Luís Balcão — Repo: lmbalcao/media-suite
 # ===============================
 
+# ==========================================
+# Passo 0: Validação do ficheiro .env
+# ==========================================
+echo "=== Passo 0: Validação do .env ==="
+
+ENV_FILE="./.env"
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "❌ Erro: ficheiro $ENV_FILE não encontrado. Cria a partir de .env.example."
+  exit 1
+fi
+
+# verificar linhas com espaços depois do "="
+if grep -qE '^[A-Z0-9_]+=[^#]*\s' "$ENV_FILE"; then
+  echo "❌ Erro: O .env contém valores com espaços. Exemplo:"
+  grep -nE '^[A-Z0-9_]+=[^#]*\s' "$ENV_FILE"
+  echo "➡️ Corrige substituindo espaços por underscores (ex: private_internet_access)"
+  exit 1
+fi
+
+echo "✅ .env validado com sucesso"
+
 # ---- Helpers ----
 log() { printf "\033[1;34m[INFO]\033[0m %s\n" "$*"; }
 warn(){ printf "\033[1;33m[WARN]\033[0m %s\n" "$*"; }
