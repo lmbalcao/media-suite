@@ -120,6 +120,7 @@ step2_nfs() {
   ensure_line "$fstab" "${NFS_SERVER}:${NFS_DOWNLOADS_REMOTE} ${NFS_DOWNLOADS_MOUNT} nfs   vers=4.1,rsize=262144,wsize=262144,hard,noatime,_netdev   0  0"
 
   log "Montar NFS agora (mount -a)..."
+  systemctl daemon-reload
   mount -a
   df -h | grep -E "${NFS_MEDIA_MOUNT}|${NFS_DOWNLOADS_MOUNT}" || die "Falha a montar NFS. Verifica IP/path no .env."
 }
