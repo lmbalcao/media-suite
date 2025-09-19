@@ -1,4 +1,3 @@
-````markdown
 # 🎬 Media Suite
 
 ![Status](https://img.shields.io/badge/status-Em%20Testes-orange?style=for-the-badge&logo=github)
@@ -6,7 +5,7 @@
 ![VPN Required](https://img.shields.io/badge/VPN-Required-red?style=for-the-badge&logo=wireguard)
 ![NFS Required](https://img.shields.io/badge/NFS-Required-green?style=for-the-badge&logo=server)
 
-Automatização de um stack multimédia com **Sonarr, Radarr, Lidarr, Prowlarr, Bazarr, Jellyfin, Tdarr e RdtClient**, todos encapsulados atrás do **Gluetun (VPN)**.
+Automatização de um stack multimédia com Sonarr, Radarr, Lidarr, Prowlarr, Bazarr, Jellyfin, Tdarr e RdtClient, todos encapsulados atrás do Gluetun (VPN).
 
 ---
 
@@ -16,7 +15,6 @@ Automatização de um stack multimédia com **Sonarr, Radarr, Lidarr, Prowlarr, 
 - ⚙️ Device `/dev/net/tun` disponível no host/LXC
 - 📂 Acesso **NFS** configurado e permitido
 - 👤 Permissões de NFS compatíveis com **UID/GID definidos no `.env`**
-````
 
 ---
 
@@ -33,14 +31,16 @@ sudo apt install -y sudo git
 cd /opt
 git clone https://github.com/lmbalcao/media-suite.git
 cd media-suite
-
+```
+```bash
 # 4. Preparar ficheiro de configuração
 cp .env.example .env
 nano .env   # editar com credenciais VPN e paths NFS
-
+```
+```bash
 # 5. Correr o bootstrap
 sudo ./bootstrap_media.sh
-````
+```
 
 ---
 
