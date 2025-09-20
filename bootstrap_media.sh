@@ -314,6 +314,25 @@ services:
       - /opt/rdtclient:/config
       - ${NFS_DOWNLOADS_MOUNT}:/downloads
     restart: unless-stopped
+    
+ ombi:
+  image: lscr.io/linuxserver/ombi:latest
+  container_name: ombi
+  user: "${PUID}:${PGID}"
+  network_mode: "service:gluetun"   # usa a rede do gluetun
+  depends_on: [gluetun]
+  environment:
+    - PUID=${PUID}
+    - PGID=${PGID}
+    - TZ=${TZ}
+  volumes:
+    - /opt/ombi:/config
+    # (opcional) só se quiseres dar browse a paths locais:
+    # - ${NFS_MEDIA_MOUNT}:/media:ro
+    # - ${NFS_DOWNLOADS_MOUNT}:/downloads:ro
+  restart: unless-stopped
+  # Nota: como está em "service:gluetun", expõe a porta no próprio gluetun:
+  # adiciona "3579" em FIREWALL_VPN_INPUT_PORTS no serviço gluetun.
 YAML
 
   log "Validar sintaxe do compose..."
