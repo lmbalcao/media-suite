@@ -130,11 +130,11 @@ step2_nfs() {
 # ======================================================================
 step3_dirs_perms() {
   log "Criar diretórios /opt e aplicar ownership 1000:1000..."
-  mkdir -p /opt/{sonarr,radarr,lidarr,prowlarr,bazarr,jellyfin,rdtclient}
+  mkdir -p /opt/{sonarr,radarr,lidarr,prowlarr,bazarr,jellyfin,rdtclient,ombi}
   mkdir -p /opt/tdarr/{server,configs,logs}
   mkdir -p /opt/gluetun
-  chown -R 1000:1000 /opt/{sonarr,radarr,lidarr,prowlarr,bazarr,jellyfin,rdtclient,tdarr,gluetun}
-  find /opt/{sonarr,radarr,lidarr,prowlarr,bazarr,jellyfin,rdtclient,tdarr} -type d -exec chmod g+s {} \;
+  chown -R 1000:1000 /opt/{sonarr,radarr,lidarr,prowlarr,bazarr,jellyfin,rdtclient,tdarr,gluetun,ombi}
+  find /opt/{sonarr,radarr,lidarr,prowlarr,bazarr,jellyfin,rdtclient,tdarr,ombi} -type d -exec chmod g+s {} \;
 }
 
 # ======================================================================
@@ -144,16 +144,15 @@ step4_stack_files() {
   log "Preparar /opt/media-stack..."
   mkdir -p /opt/media-stack
 
-  # Copiar .env do repo (faz merge simples sem duplicar linhas)
+  # Copiar .env do repo (fonte da verdade)
   log "Sincronizar .env do repo para /opt/media-stack/.env..."
   if [ -f "./.env" ]; then
-    # Mantém .env do repo como fonte da verdade
-    cp ./ .env /opt/media-stack/.env
+    cp ./.env /opt/media-stack/.env
   else
     die "Falta .env ao lado do script; cria a partir do .env.example e volta a correr."
   fi
 
-  # Criar docker-compose.yml (versão final acordada)
+  # Criar docker-compose.yml (inclui Ombi e porta 3579 no Gluetun)
   log "Escrever /opt/media-stack/docker-compose.yml..."
   cat > /opt/media-stack/docker-compose.yml <<'YAML'
 services:
@@ -186,6 +185,7 @@ services:
       - "8265:8265"   # Tdarr Web
       - "8266:8266"   # Tdarr Server
       - "6500:6500"   # RDTClient
+      - "3579:3579"   # Ombi
     restart: unless-stopped
 
   sonarr:
@@ -314,25 +314,23 @@ services:
       - /opt/rdtclient:/config
       - ${NFS_DOWNLOADS_MOUNT}:/downloads
     restart: unless-stopped
-    
- ombi:
-  image: lscr.io/linuxserver/ombi:latest
-  container_name: ombi
-  user: "${PUID}:${PGID}"
-  network_mode: "service:gluetun"   # usa a rede do gluetun
-  depends_on: [gluetun]
-  environment:
-    - PUID=${PUID}
-    - PGID=${PGID}
-    - TZ=${TZ}
-  volumes:
-    - /opt/ombi:/config
-    # (opcional) só se quiseres dar browse a paths locais:
-    # - ${NFS_MEDIA_MOUNT}:/media:ro
-    # - ${NFS_DOWNLOADS_MOUNT}:/downloads:ro
-  restart: unless-stopped
-  # Nota: como está em "service:gluetun", expõe a porta no próprio gluetun:
-  # adiciona "3579" em FIREWALL_VPN_INPUT_PORTS no serviço gluetun.
+
+  ombi:
+    image: lscr.io/linuxserver/ombi:latest
+    container_name: ombi
+    user: "${PUID}:${PGID}"
+    network_mode: "service:gluetun"
+    depends_on: [gluetun]
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /opt/ombi:/config
+      # (opcional) se quiseres browse de paths no Ombi:
+      # - ${NFS_MEDIA_MOUNT}:/media:ro
+      # - ${NFS_DOWNLOADS_MOUNT}:/downloads:ro
+    restart: unless-stopped
 YAML
 
   log "Validar sintaxe do compose..."
@@ -354,7 +352,7 @@ step5_up_checks() {
   (cd /opt/media-stack && docker exec gluetun sh -lc 'wget -qO- https://ipinfo.io/ip || wget -qO- https://ifconfig.me' || true)
 
   log "Testar UIs locais (HTTP HEAD via portas expostas no Gluetun)..."
-  for p in 8989 7878 8686 9696 6767 8096 8265 6500; do
+  for p in 8989 7878 8686 9696 6767 8096 8265 6500 3579; do
     printf -- "  %s: " "$p"
     curl -sI "http://127.0.0.1:$p" | head -n1 || true
   done
