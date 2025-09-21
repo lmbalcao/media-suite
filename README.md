@@ -1,6 +1,6 @@
 # 🎬 Media Suite
 
-![Status](https://img.shields.io/badge/status-Em%20Testes-orange?style=for-the-badge&logo=github)
+![Status](https://img.shields.io/badge/status-Descontinuado-red?style=for-the-badge&logo=github)
 ![Dockerized](https://img.shields.io/badge/Dockerized-✅-blue?style=for-the-badge&logo=docker)
 ![VPN Required](https://img.shields.io/badge/VPN-Required-red?style=for-the-badge&logo=wireguard)
 ![NFS Required](https://img.shields.io/badge/NFS-Required-green?style=for-the-badge&logo=server)
